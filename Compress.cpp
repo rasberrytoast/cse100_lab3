@@ -1,4 +1,5 @@
 #include "HCTree.hpp"
+#include "HCTree.cpp"
 #include "HCNode.hpp"
 #include "BitInputStream.hpp"
 #include "BitOutputStream.hpp"
@@ -10,6 +11,7 @@
 #define MAX_NUM_SYMBOLS 256
 
 int* getHCTreeHeader(char* inputFilename);
+void compressFile(HCTREE*, int*,	char*, char*);
 
 int main(int argc, char* argv[])
 {
@@ -23,17 +25,17 @@ int main(int argc, char* argv[])
 	printf("output file:%s\n", outputFilename);
 
 	hcTreeHeader = getHCTreeHeader(inputFilename);
-/*
+
 	HCTREE hcTree;
-	hcTree.build(hcTreeHeader);
-*/
+	hcTree.build(&hcTree, hcTreeHeader);
+
 
 	for(int i = 0; i < MAX_NUM_SYMBOLS; i++)
 	{
 		printf("char:%c count:%d", (char)i, hcTreeHeader[i]);
 	}
 
-//	compressFile(&hcTree, inputFilename, outputFilename);
+	compressFile(&hcTree, hcTreeHeader, inputFilename, outputFilename);
 
 	free(hcTreeHeader);
 }
@@ -41,8 +43,8 @@ int main(int argc, char* argv[])
 void compressFile(HCTREE* hcTree, int* hcTreeHeader, \
 		char* inputFilename, char* outputFilename)
 {
-	FILE* fpIn = fOpen(inputFilename, "r");
-	FILE* fpOut = fOpen(outputFilename, "w");
+	FILE* fpIn = fopen(inputFilename, "r");
+	FILE* fpOut = fopen(outputFilename, "w");
 	int c;
 
 	if(!fpIn)
@@ -55,9 +57,9 @@ void compressFile(HCTREE* hcTree, int* hcTreeHeader, \
 	fwrite(hcTreeHeader, sizeof(int), sizeof(sizeof(int)*MAX_NUM_SYMBOLS),fpOut);
 
 	//write compressed version of input file to compression file
-	while((c=getc(fp))!= EOF)
+	while((c=getc(fpIn))!= EOF)
 	{
-		hcTree.encode((char)c, outputFilename);
+		hcTree->encode((unsigned char)c, fpOut);
 	}
 
 	fclose(fpIn);
