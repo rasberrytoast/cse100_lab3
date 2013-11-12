@@ -12,9 +12,12 @@ typedef struct HCNODE
 	byte symbol;
 	HCNODE* c0;
 	HCNODE* c1;
+	HCNODE* (*hasGreaterPriority)(HCNODE*, HCNODE*);
+	void (*printHCNode)(HCNODE*);
 }HCNODE;
 
-
+HCNODE* hasGreaterPriority(HCNODE*, HCNODE*);
+void printHCNode(HCNODE*);
 
 
 

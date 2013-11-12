@@ -1,12 +1,16 @@
 #include <stdio.h>
-/*
-void printHCNode(HCNode* inputNode)
+#include <stdlib.h>
+#include "HCNode.hpp"
+
+
+void printHCNode(HCNODE* inputNode)
 {
-	printf("count:%d, symbol:%b, c0:%d, c1:%d\n", inputNode->count, \
-			inputNode->symbol, inputNode->c0, inputNode->c1);
+	printf("count:%d, symbol:%08x, c0:%p, c1:%p\n", inputNode->count, \
+			inputNode->symbol, (void *)inputNode->c0, \
+			(void*)inputNode->c1);
 }
 
-HCNode* findGreaterNode(HCNode* a, HCNode* b)
+HCNODE* hasGreaterPriority(HCNODE* a, HCNODE* b)
 {
 	if(a->count > b->count)
 	{
@@ -26,9 +30,8 @@ HCNode* findGreaterNode(HCNode* a, HCNode* b)
 	}
 	else
 	{
-		perror("comparing two nodes of same symbol and count%s, %d", __FILE__, \
-				__LINE__);
+		perror("comparing two nodes of same symbol and count");
 		exit(EXIT_FAILURE);
 	}
 
-}*/
+}
