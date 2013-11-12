@@ -17,21 +17,51 @@ int main(int argc, char* argv[])
 	char* outputFilename = argv[OUTFILE_ARG];
 
 	int* hcTreeHeader;
+	FILE* fpOut;
 
 	printf("input file:%s\n", inputFilename);
 	printf("output file:%s\n", outputFilename);
 
 	hcTreeHeader = getHCTreeHeader(inputFilename);
+/*
+	HCTREE hcTree;
+	hcTree.build(hcTreeHeader);
+*/
 
 	for(int i = 0; i < MAX_NUM_SYMBOLS; i++)
 	{
 		printf("char:%c count:%d", (char)i, hcTreeHeader[i]);
 	}
 
+//	compressFile(&hcTree, inputFilename, outputFilename);
+
 	free(hcTreeHeader);
+}
 
+void compressFile(HCTREE* hcTree, int* hcTreeHeader, \
+		char* inputFilename, char* outputFilename)
+{
+	FILE* fpIn = fOpen(inputFilename, "r");
+	FILE* fpOut = fOpen(outputFilename, "w");
+	int c;
 
+	if(!fpIn)
+	{
+		perror("couldn't open input file");
+		exit(EXIT_FAILURE);
+	}
 
+	//write header to compression file
+	fwrite(hcTreeHeader, sizeof(int), sizeof(sizeof(int)*MAX_NUM_SYMBOLS),fpOut);
+
+	//write compressed version of input file to compression file
+	while((c=getc(fp))!= EOF)
+	{
+		hcTree.encode((char)c, outputFilename);
+	}
+
+	fclose(fpIn);
+	fclose(fpOut);
 }
 
 int* getHCTreeHeader(char* inputFilename)
