@@ -1,0 +1,5 @@
+#ifndef BITOUTPUTSTREAM_HPP
+#define BITOUTPUTSTREAM_HPP
+
+
+#endif

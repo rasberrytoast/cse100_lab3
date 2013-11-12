@@ -1,0 +1,5 @@
+#ifndef BITINPUTSTREAM_HPP
+#define BITINPUTSTREAM_HPP
+
+
+#endif
