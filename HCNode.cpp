@@ -37,10 +37,9 @@ HCNODE* hasGreaterPriority(HCNODE* a, HCNODE* b)
 	{
 		return b;
 	}
-	else
+	else// comparing two nodes of same symbol and count
 	{
-		perror("comparing two nodes of same symbol and count");
-		exit(EXIT_FAILURE);
+		return a;
 	}
 
 }

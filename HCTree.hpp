@@ -11,15 +11,32 @@ typedef struct HCTREE
 {
 	HCNODE* root;
 	//HCNODE* leaves[MAX_NUM_SYMBOLS];
-	byte symbolEncodedAsZero;
 	byte symbolTable[MAX_NUM_SYMBOLS];
 	void (*build)(HCTREE*, int*);
 	void (*encode)(byte symbol, FILE*);
 	int (*decode)(FILE*);
 }HCTREE;
 
+typedef struct QUEUE
+{
+	int size;
+	HCNODE* head;
+	void (*init)(QUEUE*);
+	int (*size)(QUEUE*);
+	HCNODE* (*pop)(QUEUE*);
+	void (*push)(QUEUE*, HCNODE*);
+	void (*deleteAll)(QUEUE*);
+}QUEUE;
+
+//for HCTree
 void build(HCTREE*, int*);
-//start by writing one byte per symbol to file, it's slow, but easier to debug
 void encode(byte symbol, FILE*);
 int decode(FILE*);
+
+//for queue
+void (*init)(QUEUE*);
+int (*size)(QUEUE*);
+HCNODE* (*pop)(QUEUE*);
+void (*push)(QUEUE*, HCNODE*);
+void (*deleteAll)(QUEUE*);
 #endif

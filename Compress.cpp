@@ -19,7 +19,6 @@ int main(int argc, char* argv[])
 	char* outputFilename = argv[OUTFILE_ARG];
 
 	int* hcTreeHeader;
-	FILE* fpOut;
 
 	printf("input file:%s\n", inputFilename);
 	printf("output file:%s\n", outputFilename);
@@ -59,7 +58,7 @@ void compressFile(HCTREE* hcTree, int* hcTreeHeader, \
 	//write compressed version of input file to compression file
 	while((c=getc(fpIn))!= EOF)
 	{
-		hcTree->encode((unsigned char)c, fpOut);
+		hcTree->encode(hcTree, (unsigned char)c, fpOut);
 	}
 
 	fclose(fpIn);

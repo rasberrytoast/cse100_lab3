@@ -45,7 +45,31 @@ void build(HCTREE* hcTree, int* counts)
  */
 void createSymbolTable(HCTREE* hcTree, HCNODE* leaves[])
 {
-
+	for(int i = 0; i< MAX_NUM_SYMBOLS; i++)
+	{
+		if(leaves[i])
+		{
+			hcTree->symbolTable[i] = 0;
+			while(leaves[i]->parent)
+			{
+				if(leaves[i] == leaves[i]->parent->c1)
+				{
+					hcTree->symbolTable[i] <<= 1;
+					hcTree->symbolTable[i] |= 0x1;
+				}
+				else if(leaves[i] == leaves[i]->parent->c0)
+				{
+					hcTree->symbolTable[i] <<= 1;
+				}
+				else
+				{
+					perror("indicated parent exists, but this node is not the \
+							right or left child");
+					exit(EXIT_FAILURE);
+				}
+			}
+		}
+	}
 }
 /*
  * takes a queue and starts creating trees by merging highest priority
@@ -57,6 +81,7 @@ HCNODE* reduceQueueToTree(QUEUE queue)
 	HCNODE* c0;
 	HCNODE* c1;
 	HCNODE* newRoot;
+	HCNODE* returnRoot;
 
 	while(queue.size() > 1)
 	{
@@ -74,13 +99,78 @@ HCNODE* reduceQueueToTree(QUEUE queue)
 
 		queue.push(newRoot);
 	}
-	return queue.pop();
+	returnRoot = queue.pop();
+	queue.deleteAll();
+	return returnRoot;
 }
 //start by writing one byte per symbol to file, it's slow, but easier to debug
-void encode(byte symbol, FILE*)
+void encode(HCTREE* hcTree, byte symbol, FILE* fpOut)
 {
+	fputc(hcTree->symbolTable[symbol], fpOut);
+	//fwrite(hcTree->symbolTable[symbol], fpOut); 
 }
 int decode(FILE*)
 {
 	return 5;
+}
+
+void init(QUEUE* queue)
+{
+	queue->size = 0;
+	queue->head = 0;
+}
+
+int size(QUEUE* queue)
+{
+	return queue->size;
+}
+
+HCNODE* pop(QUEUE* queue)
+{
+	HCNODE* tmp;
+	HCNODE* highestPriority;
+	if(queue->size && queue->head)
+	{
+		for(tmp = queue->head, highestPriority = queue->head; \
+				tmp; tmp=tmp->c1)
+		{
+			highestPriority = hasGreaterPriority(tmp, highestPriority);
+		}
+
+		highestPriority->parent->c1 = highestPriority->c1;
+		highestPriority->c1->parent = highestPriority->parent;
+		queue->size--;
+	}
+	else
+	{
+		perror("tried to pop from empty queue");
+		exit(EXIT_FAILURE);
+	}
+	return highestPriority;
+}
+
+void push(QUEUE* queue, HCNODE* hcNode)
+{
+	if(queue->head)
+	{
+		HCNODE* cursor = queue->head;
+		for(cursor = queue->head; cursor->c1 ;cursor = cursor->c1);
+		hcNode->parent = cursor;
+		cursor->c1 = hcNode;
+	}
+	else
+	{
+		queue->head = hcNode;
+	}
+}
+
+void deleteAll(QUEUE* queue)
+{
+	register HCNODE* tmp;
+	while(queue->head)
+	{
+		tmp = queue->head;
+		queue->head = queue->head->c1;
+		free(tmp);
+	}
 }
