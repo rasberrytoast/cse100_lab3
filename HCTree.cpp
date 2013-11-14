@@ -19,14 +19,15 @@ void build(HCTREE* hcTree, int* counts)
 
 	HCNODE* leaf;
 	QUEUE queue;
-	queue.init();
+	queue.initQueue(&queue);
 
 
 	//put all leaf nodes into queue and into leaf pointer array
-	for(int i; i< MAX_NUM_SYMBOLS; i++)
+	for(int i = 0; i< MAX_NUM_SYMBOLS; i++)
 	{
-		leaf = malloc(sizeof(HCNODE));
-		queue.push(leaf->init(leaf, counts[i], (byte)i));
+		leaf = (HCNODE*)malloc(sizeof(HCNODE));
+		leaf->initNode(leaf, counts[i], (byte)i);
+		queue.push(&queue, leaf);
 		leaves[i] = leaf;
 	}
 
@@ -83,11 +84,11 @@ HCNODE* reduceQueueToTree(QUEUE queue)
 	HCNODE* newRoot;
 	HCNODE* returnRoot;
 
-	while(queue.size() > 1)
+	while(queue.size(&queue) > 1)
 	{
 		newRoot = (HCNODE*)malloc(sizeof(HCNODE));
-		c0 = queue.pop();
-		c1 = queue.pop();
+		c0 = queue.pop(&queue);
+		c1 = queue.pop(&queue);
 
 		newRoot->count = c0->count + c1->count;
 		newRoot->symbol = c0->symbol;
@@ -97,10 +98,10 @@ HCNODE* reduceQueueToTree(QUEUE queue)
 		c1->parent = newRoot;
 		newRoot->parent = 0;
 
-		queue.push(newRoot);
+		queue.push(&queue, newRoot);
 	}
-	returnRoot = queue.pop();
-	queue.deleteAll();
+	returnRoot = queue.pop(&queue);
+	queue.deleteAll(&queue);
 	return returnRoot;
 }
 //start by writing one byte per symbol to file, it's slow, but easier to debug
@@ -114,6 +115,7 @@ byte decode(HCTREE* hcTree, byte c, FILE* fpOut)
 	//since we are only handling ascii, we can just use the character to 
 	//start decoding
 	HCNODE* cursor = hcTree->root;
+
 	//tree is a complete bst so, as long as node has a child, it isn't a leaf
 	while(cursor->c0)
 	{
@@ -127,7 +129,7 @@ byte decode(HCTREE* hcTree, byte c, FILE* fpOut)
 		}
 		c >>= 1;
 	}
-	fputs((int)cursor->symbol, fpOut);
+	fputs((const char*)cursor->symbol, fpOut);
 	return cursor->symbol;
 }
 
@@ -139,8 +141,8 @@ void deleteTree(HCTREE* hcTree)
 void deleteAll(HCNODE* hcNode)
 {
 	if(0 == hcNode) return;
-	deleteAll(hcNode->left);
-	deleteAll(hcNode->right);
+	deleteAll(hcNode->c0);
+	deleteAll(hcNode->c1);
 	free(hcNode);
 }
 /*{
@@ -151,15 +153,15 @@ void deleteAll(HCNODE* hcNode)
 		}
 }*/
 
-void init(QUEUE* queue)
+void initQueue(QUEUE* queue)
 {
-	queue->size = 0;
+	queue->numElements = 0;
 	queue->head = 0;
 }
 
 int size(QUEUE* queue)
 {
-	return queue->size;
+	return queue->numElements;
 }
 
 HCNODE* pop(QUEUE* queue)
@@ -176,7 +178,7 @@ HCNODE* pop(QUEUE* queue)
 
 		highestPriority->parent->c1 = highestPriority->c1;
 		highestPriority->c1->parent = highestPriority->parent;
-		queue->size--;
+		queue->numElements--;
 	}
 	else
 	{
@@ -199,9 +201,10 @@ void push(QUEUE* queue, HCNODE* hcNode)
 	{
 		queue->head = hcNode;
 	}
+	queue->numElements++;
 }
 
-void deleteAll(QUEUE* queue)
+void deleteQueue(QUEUE* queue)
 {
 	register HCNODE* tmp;
 	while(queue->head)
@@ -210,4 +213,5 @@ void deleteAll(QUEUE* queue)
 		queue->head = queue->head->c1;
 		free(tmp);
 	}
+	queue->numElements = 0;
 }

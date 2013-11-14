@@ -14,15 +14,15 @@ typedef struct HCTREE
 	byte symbolTable[MAX_NUM_SYMBOLS];
 	void (*build)(HCTREE*, int*);
 	void (*encode)(HCTREE*, byte symbol, FILE*);
-	int (*decode)(HCTREE*, byte symbol, FILE*);
+	byte (*decode)(HCTREE*, byte symbol, FILE*);
 	void (*deleteTree)(HCTREE*);
 }HCTREE;
 
 typedef struct QUEUE
 {
-	int size;
+	int numElements;
 	HCNODE* head;
-	void (*init)(QUEUE*);
+	void (*initQueue)(QUEUE*);
 	int (*size)(QUEUE*);
 	HCNODE* (*pop)(QUEUE*);
 	void (*push)(QUEUE*, HCNODE*);
@@ -32,13 +32,16 @@ typedef struct QUEUE
 //for HCTree
 void build(HCTREE*, int*);
 void encode(HCTREE*, byte symbol, FILE*);
-int decode(HCTREE*, byte symbol, FILE*);
-void (*deleteTree)(HCTREE*);
+byte decode(HCTREE*, byte symbol, FILE*);
+void deleteTree(HCTREE*);
+void deleteAll(HCNODE*);
+void createSymbolTable(HCTREE* hcTree, HCNODE* leaves[]);
 
 //for queue
-void (*init)(QUEUE*);
-int (*size)(QUEUE*);
-HCNODE* (*pop)(QUEUE*);
-void (*push)(QUEUE*, HCNODE*);
-void (*deleteAll)(QUEUE*);
+void initQueue(QUEUE*);
+int size(QUEUE*);
+HCNODE* pop(QUEUE*);
+void push(QUEUE*, HCNODE*);
+void deleteQueue(QUEUE*);
+HCNODE* reduceQueueToTree(QUEUE queue);
 #endif

@@ -15,12 +15,12 @@ typedef struct HCNODE
 	HCNODE* parent;
 	HCNODE* (*hasGreaterPriority)(HCNODE*, HCNODE*);
 	void (*printHCNode)(HCNODE*);
-	void (*initNode)(int, byte, HCNODE*, HCNODE*);
+	void (*initNode)(HCNODE*, int, byte);
 }HCNODE;
 
 HCNODE* hasGreaterPriority(HCNODE*, HCNODE*);
 void printHCNode(HCNODE*);
-HCNODE* init(HCNODE* hcnode, int cnt, byte sym);
+HCNODE* initNode(HCNODE* hcnode, int cnt, byte sym);
 
 
 
