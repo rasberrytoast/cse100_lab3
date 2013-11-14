@@ -9,7 +9,7 @@
 #define INFILE_ARG 1
 #define OUTFILE_ARG 2
 #define MAX_NUM_SYMBOLS 256
-
+//xtra comment for commit
 int* getHCTreeHeader(FILE*);
 void uncompressFile(HCTREE*, int*,	FILE*, char*);
 
