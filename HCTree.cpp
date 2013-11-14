@@ -109,10 +109,47 @@ void encode(HCTREE* hcTree, byte symbol, FILE* fpOut)
 	fputc(hcTree->symbolTable[symbol], fpOut);
 	//fwrite(hcTree->symbolTable[symbol], fpOut); 
 }
-int decode(FILE*)
+byte decode(HCTREE* hcTree, byte c, FILE* fpOut)
 {
-	return 5;
+	//since we are only handling ascii, we can just use the character to 
+	//start decoding
+	HCNODE* cursor = hcTree->root;
+	//tree is a complete bst so, as long as node has a child, it isn't a leaf
+	while(cursor->c0)
+	{
+		if(c & 0x1)
+		{
+			cursor = cursor->c1;
+		}
+		else
+		{
+			cursor = cursor->c0;
+		}
+		c >>= 1;
+	}
+	fputs((int)cursor->symbol, fpOut);
+	return cursor->symbol;
 }
+
+void deleteTree(HCTREE* hcTree)
+{
+	deleteAll(hcTree->root);
+}
+
+void deleteAll(HCNODE* hcNode)
+{
+	if(0 == hcNode) return;
+	deleteAll(hcNode->left);
+	deleteAll(hcNode->right);
+	free(hcNode);
+}
+/*{
+	clearerr()
+		while(!feof(File *)
+		{
+			fread(1 byte)
+		}
+}*/
 
 void init(QUEUE* queue)
 {

@@ -13,8 +13,9 @@ typedef struct HCTREE
 	//HCNODE* leaves[MAX_NUM_SYMBOLS];
 	byte symbolTable[MAX_NUM_SYMBOLS];
 	void (*build)(HCTREE*, int*);
-	void (*encode)(byte symbol, FILE*);
-	int (*decode)(FILE*);
+	void (*encode)(HCTREE*, byte symbol, FILE*);
+	int (*decode)(HCTREE*, byte symbol, FILE*);
+	void (*deleteTree)(HCTREE*);
 }HCTREE;
 
 typedef struct QUEUE
@@ -30,8 +31,9 @@ typedef struct QUEUE
 
 //for HCTree
 void build(HCTREE*, int*);
-void encode(byte symbol, FILE*);
-int decode(FILE*);
+void encode(HCTREE*, byte symbol, FILE*);
+int decode(HCTREE*, byte symbol, FILE*);
+void (*deleteTree)(HCTREE*);
 
 //for queue
 void (*init)(QUEUE*);
