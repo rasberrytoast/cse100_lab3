@@ -17,7 +17,7 @@ int main(int argc, char* argv[])
 {
 	char * inputFilename = argv[INFILE_ARG];
 	char* outputFilename = argv[OUTFILE_ARG];
-
+	
 	int* hcTreeHeader;
 
 	printf("input file:%s\n", inputFilename);
@@ -37,12 +37,13 @@ int main(int argc, char* argv[])
 	compressFile(&hcTree, hcTreeHeader, inputFilename, outputFilename);
 
 	free(hcTreeHeader);
+	hcTree.deleteTree(&hcTree);
 }
 
 void compressFile(HCTREE* hcTree, int* hcTreeHeader, \
 		char* inputFilename, char* outputFilename)
 {
-	FILE* fpIn = fopen(inputFilename, "r");
+	FILE* fpIn = fopen((const char*)inputFilename, "r");
 	FILE* fpOut = fopen(outputFilename, "w");
 	int c;
 
@@ -51,9 +52,6 @@ void compressFile(HCTREE* hcTree, int* hcTreeHeader, \
 		perror("couldn't open input file");
 		exit(EXIT_FAILURE);
 	}
-
-	//write header to compression file
-	fwrite(hcTreeHeader, sizeof(int), sizeof(sizeof(int)*MAX_NUM_SYMBOLS),fpOut);
 
 	//write compressed version of input file to compression file
 	while((c=getc(fpIn))!= EOF)
@@ -68,19 +66,20 @@ void compressFile(HCTREE* hcTree, int* hcTreeHeader, \
 int* getHCTreeHeader(char* inputFilename)
 {
 	int* hcTreeHeader = (int *)calloc((size_t)MAX_NUM_SYMBOLS, sizeof(int));
-	FILE* fp = fopen((const char*)inputFilename, "r");
+	FILE* fpIn = fopen((const char*)inputFilename, "r");
 	int c;
 
-	if(!fp)
+	if(!fpIn)
 	{
 		perror("error reading inputfile");
 		exit(EXIT_FAILURE);
 	}
 
-	while((c=getc(fp))!= EOF)
+	while((c = getc(fpIn)) != EOF)
 	{
-		hcTreeHeader[c]++;
+		hcTreeHeader[(byte)c]++;
 	}
 
+	fclose(fpIn);
 	return hcTreeHeader;
 }

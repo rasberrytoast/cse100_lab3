@@ -10,8 +10,8 @@
 #define OUTFILE_ARG 2
 #define MAX_NUM_SYMBOLS 256
 
-int* getHCTreeHeader(char* inputFilename);
-void compressFile(HCTREE*, int*,	char*, char*);
+int* getHCTreeHeader(FILE*);
+void uncompressFile(HCTREE*, int*,	FILE*, char*);
 
 int main(int argc, char* argv[])
 {
@@ -35,7 +35,7 @@ int main(int argc, char* argv[])
 		printf("char:%c count:%d", (char)i, hcTreeHeader[i]);
 	}
 
-	uncompressFile(&hcTree, hcTreeHeader, inputFilename, outputFilename);
+	uncompressFile(&hcTree, hcTreeHeader, fpIn, outputFilename);
 
 	free(hcTreeHeader);
 	hcTree.deleteTree(&hcTree);
